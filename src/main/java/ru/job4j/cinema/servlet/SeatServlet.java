@@ -1,4 +1,6 @@
 package ru.job4j.cinema.servlet;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import ru.job4j.cinema.model.Seat;
 import ru.job4j.cinema.store.PsqlStore;
 import javax.servlet.http.HttpServlet;
@@ -25,41 +27,17 @@ public class SeatServlet extends HttpServlet {
     }
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        System.out.println("SeatSRV");
         req.setAttribute("user", req.getSession().getAttribute("user"));
         req.setAttribute("seats", PsqlStore.instOf().findAllSeats());
 
-        String res = "<thead>" +
-                       "<tr>" +
-                           "<th style=\"width: 120px;\">Ряд / Место</th>" +
-                           "<th>1</th>" +
-                           "<th>2</th>" +
-                           "<th>3</th>" +
-                       "</tr>" +
-                       "</thead>" +
-                       "<tbody>";
-        int prevRow = -1;
-        for (Seat seat: PsqlStore.instOf().findAllSeats()) {
-            if (seat.getRow() != prevRow) {
-                res += "<tr>" +
-                        "<th>" + seat.getRow() + "</th>";
-            }
-            if (seat.getUserId() != 0) {
-                res += "<td bgcolor=\"#5f9ea0\"><input type=\"radio\" class=\"place\" name=\"place\" value=\"" + seat.toString() + "\" disabled=\"true\" />";
-            } else {
-                res += "<td><input type=\"radio\" class=\"place\" name=\"place\" value=\"" + seat.toString() + "\"/>";
-            }
-            res += "Ряд " + seat.getRow() + ", Место " + seat.getNum() + ", Цена " + seat.getPrice() + "</td>";
-            prevRow = seat.getRow();
-            if (seat.getRow() != prevRow) {
-                res += "</tr>";
-            }
-        }
-        res += "</tbody>";
-
-        resp.setContentType("text/html");
-        resp.setCharacterEncoding("windows-1251");
-        PrintWriter writer = new PrintWriter(resp.getOutputStream());
-        writer.println(res);
-        writer.flush();
+        Gson gson = new Gson();
+        String json = gson.toJson(PsqlStore.instOf().findAllSeats());
+        resp.setContentType("text/json");
+        resp.setCharacterEncoding("windows-1251"/*"utf-8"*/);
+        PrintWriter out = resp.getWriter();
+        System.out.println("SEAT=" + json);
+        out.println(json);
+        out.flush();
     }
 }

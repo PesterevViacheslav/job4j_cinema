@@ -22,27 +22,65 @@
 
     <script>
         function buy(user) {
+            alert("BUY");
             if (user == null) {
                 window.location.href = 'login.jsp';
             } else {
+                //alert("ELSE  " + JSON.stringify($("input:radio[name=place]:selected").val()));
                 let t = JSON.parse($("input:radio[name=place]:selected").val());
+                alert("t=" + t);
                 window.location.href = 'payment.do?row=' + t['row'] + '&num=' + t['num'] + '&price=' + t['price'];
             }
             return true;
         }
     </script>
     <script>
-        function getSeats(checked) {
+        function getSeats() {
+            let res = null;
             $.ajax({
                 type: 'POST',
-                url: 'http://localhost:8080/cinema/seats.do?checked=' + checked,
-                encoding: 'windows-1251'
+                url: 'http://localhost:8080/cinema/seats.do',
+                encoding: 'windows-1251',
+                dataType: 'json'
             }).done(function(data) {
-                $("#bookTbl").html(data);
-            }).fail(function(err){
-                console.log(err);
+                alert("getSeats " + JSON.stringify(data));
+                // let res;
+                // if (data) {
+                //     res = "<thead>" +
+                //         "<tr>" +
+                //         "<th style=\"width: 120px;\">Ряд / Место</th>" +
+                //         "<th>1</th>" +
+                //         "<th>2</th>" +
+                //         "<th>3</th>" +
+                //         "</tr>" +
+                //         "</thead>" +
+                //         "<tbody>";
+                //     let prevRow = -1;
+                //     for (let i = 0; i < data.length; i++) {
+                //         if (data[i].row != prevRow) {
+                //             res += "<tr>" +
+                //                 "<th>" + data[i].row + "</th>";
+                //         }
+                //         if (data[i].userId != 0) {
+                //             res += "<td bgcolor=\"#5f9ea0\"><input type=\"radio\" class=\"place\" name=\"place\" value=\"" + data[i].toString() + "\" disabled=\"true\" />";
+                //         } else {
+                //             res += "<td><input type=\"radio\" class=\"place\" name=\"place\" value=\"" + data[i].toString() + "\"/>";
+                //         }
+                //         res += "Ряд " + data[i].row + ", Место " + data[i].num + ", Цена " + data[i].price + "</td>";
+                //         prevRow = data[i].row;
+                //         if (data[i].row != prevRow) {
+                //             res += "</tr>";
+                //         }
+                //     }
+                //      res += "</tbody>";
+                // }
+                // alert(res);
+                //$("#bookTbl").html(res);
+                res = data;
+            }).fail(function(err) {
+                alert(err);
             });
-            return false;
+            return res;
         }
     </script>
 </head>
@@ -53,8 +91,38 @@
 <div class="container">
     <script>
         $(document).ready(function(){
-            getSeats();
-            setInterval('getSeats()',5000);
+            let data  = getSeats();
+            let res;
+            alert(JSON.stringify(data));
+                res = "<thead>" +
+                    "<tr>" +
+                    "<th style=\"width: 120px;\">Ряд / Место</th>" +
+                    "<th>1</th>" +
+                    "<th>2</th>" +
+                    "<th>3</th>" +
+                    "</tr>" +
+                    "</thead>" +
+                    "<tbody>";
+                let prevRow = -1;
+                for (let i = 0; i < data.length; i++) {
+                    if (data[i].row != prevRow) {
+                        res += "<tr>" +
+                            "<th>" + data[i].row + "</th>";
+                    }
+                    if (data[i].userId != 0) {
+                        res += "<td bgcolor=\"#5f9ea0\"><input type=\"radio\" class=\"place\" name=\"place\" value=\"" + data[i].toString() + "\" disabled=\"true\" />";
+                    } else {
+                        res += "<td><input type=\"radio\" class=\"place\" name=\"place\" value=\"" + data[i].toString() + "\"/>";
+                    }
+                    res += "Ряд " + data[i].row + ", Место " + data[i].num + ", Цена " + data[i].price + "</td>";
+                    prevRow = data[i].row;
+                    if (data[i].row != prevRow) {
+                        res += "</tr>";
+                    }
+                }
+                res += "</tbody>";
+                $("#bookTbl").html(res);
+                // setInterval('getSeats()',5000);
         });
     </script>
 
