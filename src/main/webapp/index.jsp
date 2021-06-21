@@ -23,6 +23,7 @@
     <script>
         function buy(user) {
             alert("BUY");
+            console.log("BUY log");
             if (user == null) {
                 window.location.href = 'login.jsp';
             } else {
@@ -36,6 +37,7 @@
     </script>
     <script>
         function getSeats() {
+            console.log("getSeats() Entered");
             let res = null;
             $.ajax({
                 type: 'POST',
@@ -43,7 +45,8 @@
                 encoding: 'windows-1251',
                 dataType: 'json'
             }).done(function(data) {
-                alert("getSeats " + JSON.stringify(data));
+                console.log("getSeats() JSON.stringify(data)= " + JSON.stringify(data));
+                //alert("getSeats " + JSON.stringify(data));
                 // let res;
                 // if (data) {
                 //     res = "<thead>" +
@@ -80,6 +83,7 @@
             }).fail(function(err) {
                 alert(err);
             });
+            console.log("getSeats() Finished res=" + res);
             return res;
         }
     </script>
@@ -91,19 +95,21 @@
 <div class="container">
     <script>
         $(document).ready(function(){
+            console.log("$(document).ready(function() Entered");
             let data  = getSeats();
+            console.log("$(document).ready(function() data=" + data);
             let res;
-            alert(JSON.stringify(data));
-                res = "<thead>" +
-                    "<tr>" +
-                    "<th style=\"width: 120px;\">Ряд / Место</th>" +
-                    "<th>1</th>" +
-                    "<th>2</th>" +
-                    "<th>3</th>" +
-                    "</tr>" +
-                    "</thead>" +
-                    "<tbody>";
-                let prevRow = -1;
+            res = "<thead>" +
+                "<tr>" +
+                "<th style=\"width: 120px;\">Ряд / Место</th>" +
+                "<th>1</th>" +
+                "<th>2</th>" +
+                "<th>3</th>" +
+                "</tr>" +
+                "</thead>" +
+                "<tbody>";
+            let prevRow = -1;
+            if (data != null) {
                 for (let i = 0; i < data.length; i++) {
                     if (data[i].row != prevRow) {
                         res += "<tr>" +
@@ -120,9 +126,10 @@
                         res += "</tr>";
                     }
                 }
-                res += "</tbody>";
-                $("#bookTbl").html(res);
-                // setInterval('getSeats()',5000);
+            }
+            res += "</tbody>";
+            $("#bookTbl").html(res);
+            // setInterval('getSeats()',5000);
         });
     </script>
 

@@ -1,7 +1,7 @@
 package ru.job4j.cinema.servlet;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import ru.job4j.cinema.model.Seat;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ru.job4j.cinema.store.PsqlStore;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -18,6 +18,8 @@ import java.io.PrintWriter;
  * @version 1
  */
 public class SeatServlet extends HttpServlet {
+    private static final Logger LOG = LogManager.getLogger(SeatServlet.class.getName());
+
     @Override
     protected void doGet(HttpServletRequest req,
                          HttpServletResponse resp) throws IOException {
@@ -27,7 +29,6 @@ public class SeatServlet extends HttpServlet {
     }
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        System.out.println("SeatSRV");
         req.setAttribute("user", req.getSession().getAttribute("user"));
         req.setAttribute("seats", PsqlStore.instOf().findAllSeats());
 
@@ -36,7 +37,7 @@ public class SeatServlet extends HttpServlet {
         resp.setContentType("text/json");
         resp.setCharacterEncoding("windows-1251"/*"utf-8"*/);
         PrintWriter out = resp.getWriter();
-        System.out.println("SEAT=" + json);
+        LOG.debug("SeatSRV {}", json);
         out.println(json);
         out.flush();
     }
